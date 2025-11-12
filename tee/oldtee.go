@@ -1,0 +1,5 @@
+package tee
+
+func tee() {
+
+}
