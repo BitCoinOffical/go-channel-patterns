@@ -1,14 +1,5 @@
 package main
 
-import (
-	"context"
-	"fmt"
-	"sync"
-	"time"
-
-	"github.com/BitCoinOffical/go-channel-patterns/fanout"
-)
-
 func main() {
 
 	// start := time.Now()
@@ -27,33 +18,37 @@ func main() {
 	// }
 	// fmt.Println(time.Since(start))
 
-	wg := &sync.WaitGroup{}
+	// wg := &sync.WaitGroup{}
 
-	ch1 := make(chan int)
+	// ch1 := make(chan int)
 
-	wg.Go(func() {
-		ch1 <- 1
-		close(ch1)
-	})
+	// wg.Go(func() {
+	// 	ch1 <- 1
+	// 	close(ch1)
+	// })
 
 	// start := time.Now()
-	// chs := fanout.FanOut(ch1, 3)
-	// for _, val := range chs {
-	// 	fmt.Println(val)
+	// for _, ch := range fanout.FanOut(ch1, 3) {
+	// 	wg.Go(func() {
+	// 		for val := range ch {
+	// 			fmt.Println(val)
+	// 		}
+	// 	})
 	// }
+	// wg.Wait()
 	// fmt.Println(time.Since(start))
 
-	ctx, canel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer canel()
-	start := time.Now()
-	chs := fanout.WithContextFanOut(ctx, ch1, 3)
-	for _, val := range chs {
-		wg.Go(func() {
-			for v := range val {
-				fmt.Println(v)
-			}
-		})
-	}
-	wg.Wait()
-	fmt.Println(time.Since(start))
+	// ctx, canel := context.WithTimeout(context.Background(), 2*time.Second)
+	// defer canel()
+	// start := time.Now()
+	// chs := fanout.WithContextFanOut(ctx, ch1, 3)
+	// for _, val := range chs {
+	// 	wg.Go(func() {
+	// 		for v := range val {
+	// 			fmt.Println(v)
+	// 		}
+	// 	})
+	// }
+	// wg.Wait()
+	// fmt.Println(time.Since(start))
 }
