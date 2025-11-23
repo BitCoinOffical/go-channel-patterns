@@ -63,3 +63,21 @@ func FanIn[T any](chans ...<-chan T) <-chan T {
 
 	return ch
 }
+
+func Fanin(chans ...chan int) chan int {
+	wg := &sync.WaitGroup{}
+	ch := make(chan int)
+	for _, c := range chans {
+		wg.Go(func() {
+			for v := range c {
+				ch <- v
+			}
+		})
+	}
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	return ch
+}

@@ -1,5 +1,0 @@
-package tee
-
-func tee() {
-
-}

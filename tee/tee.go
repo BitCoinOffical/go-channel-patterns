@@ -1,45 +1,25 @@
 package tee
 
-import (
-	"context"
-	"sync"
-)
+func Tee[T any](in <-chan T) (_, _ <-chan T) {
+	out1 := make(chan T)
+	out2 := make(chan T)
 
-func Tee(ctx context.Context, in chan int, numChans int) []chan int {
-	chans := make([]chan int, numChans)
-	for i := range numChans {
-		chans[i] = make(chan int)
-	}
 	go func() {
-		for i := range numChans {
-			defer close(chans[i])
-		}
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case val, ok := <-in:
-				if !ok {
-					return
+		defer close(out1)
+		defer close(out2)
+
+		for val := range in {
+			var out1, out2 = out1, out2
+			for range 2 {
+				select {
+				case out1 <- val:
+					out1 = nil
+				case out2 <- val:
+					out2 = nil
 				}
-				wg := &sync.WaitGroup{}
-
-				for i := range numChans {
-					wg.Go(func() {
-						select {
-						case <-ctx.Done():
-							return
-						case chans[i] <- val:
-
-						}
-
-					})
-				}
-				wg.Wait()
-
 			}
-
 		}
 	}()
-	return chans
+
+	return out1, out2
 }

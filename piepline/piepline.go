@@ -1,16 +1,27 @@
 package piepline
 
-import (
-	tasker "github.com/BitCoinOffical/go-channel-patterns/pkg"
-)
+func Generate(values ...int) chan int {
+	out := make(chan int)
 
-func Pipeline[T any](in <-chan T) chan T {
-	out := make(chan T)
 	go func() {
-		for v := range in {
-			out <- tasker.Task(v)
+		defer close(out)
+		for i := range values {
+			out <- i
 		}
-		close(out)
 	}()
+
+	return out
+}
+
+func PiePline(in chan int, f func(int) int) chan int {
+	out := make(chan int)
+
+	go func() {
+		defer close(out)
+		for i := range in {
+			out <- f(i)
+		}
+	}()
+
 	return out
 }
